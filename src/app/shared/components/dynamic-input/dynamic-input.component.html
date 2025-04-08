@@ -1,0 +1,99 @@
+<div class="form-field">
+  <mat-form-field [ngClass]="{ 'readonly-field': !isEditable }" *ngIf="type !== 'radio'">
+    <mat-label>{{ label }}</mat-label>
+
+    <!-- Text Input -->
+    <input
+      matInput
+      *ngIf="type === 'text'"
+      [formControl]="control"
+      [readonly]="!isEditable"
+    />
+
+    <!-- Password Input -->
+    <input
+      matInput
+      *ngIf="type === 'password'"
+      [type]="isPasswordHidden ? 'password' : 'text'"
+      [formControl]="control"
+      [readonly]="!isEditable"
+    />
+    <button
+      *ngIf="type === 'password' && isEditable"
+      mat-icon-button
+      matSuffix
+      (click)="isPasswordHidden = !isPasswordHidden"
+      [attr.aria-label]="'Hide password'"
+      [attr.aria-pressed]="isPasswordHidden"
+    >
+      <mat-icon>{{ isPasswordHidden ? 'visibility_off' : 'visibility' }}</mat-icon>
+    </button>
+
+    <!-- Number Input -->
+    <input
+      matInput
+      *ngIf="type === 'number'"
+      type="number"
+      [formControl]="control"
+      [readonly]="!isEditable"
+    />
+
+    <!-- Date Input -->
+    <input
+      matInput
+      *ngIf="type === 'date'"
+      type="date"
+      [formControl]="control"
+      [readonly]="!isEditable"
+    />
+
+    <!-- Dropdown -->
+    <mat-select
+      *ngIf="type === 'dropdown'"
+      [formControl]="control"
+      [disabled]="!isEditable"
+    >
+      <!-- Search input inside the dropdown -->
+      <input
+        *ngIf="optionDisplayFields.length > 0"
+        type="text"
+        [(ngModel)]="filterText"
+        (keyup)="onFilterChange(filterText)"
+        (click)="$event.stopPropagation()"
+        placeholder="Search..."
+        class="search-input"
+      />
+
+      <!-- Filtered options -->
+      <mat-option
+        *ngFor="let option of filteredOptionsSource$ | async"
+        [value]="optionDisplayFields.length > 0 ? option.id : option"
+      >
+        {{ optionDisplayFields.length > 0 ? formatOption(option) : option }}
+      </mat-option>
+    </mat-select>
+
+    <!-- Textarea -->
+    <textarea
+      matInput
+      *ngIf="type === 'textarea'"
+      [formControl]="control"
+      rows="5"
+      [readonly]="!isEditable"
+    ></textarea>
+
+    <mat-error *ngIf="control && control.hasError('required') && control.touched">
+      {{ label }} is required
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Radio Buttons -->
+  <div *ngIf="type === 'radio'" class="form-field">
+    <div class="radio-label">{{ label }}</div>
+    <mat-radio-group [formControl]="control" [disabled]="!isEditable">
+      <mat-radio-button *ngFor="let option of radioOptions" [value]="option.value" class="radio-button">
+        {{ option.label }}
+      </mat-radio-button>
+    </mat-radio-group>
+  </div>
+</div>

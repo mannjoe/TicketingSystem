@@ -1,0 +1,71 @@
+<div class="login-container">
+  <mat-card class="login-card">
+    <mat-card-header class="center-content">
+      <img src="assets/company-logo.png" alt="Logo" class="logo">
+    </mat-card-header>
+
+    <mat-card-content>
+      <div class="login-card-content">
+        <form *ngIf="!showForgotPassword" [formGroup]="loginForm" (ngSubmit)="login()" class="center-content">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Username</mat-label>
+            <input matInput formControlName="username" required>
+            <mat-icon matSuffix>person</mat-icon>
+            <mat-error *ngIf="username?.invalid && (username?.dirty || username?.touched) && username?.hasError('required')" class="error-message">
+              Username is required
+            </mat-error>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Password</mat-label>
+            <input matInput type="password" formControlName="password" required>
+            <mat-icon matSuffix>lock</mat-icon>
+            <mat-error *ngIf="password?.invalid && (password?.dirty || password?.touched) && password?.hasError('required')" class="error-message">
+              Password is required
+          </mat-error>
+        </mat-form-field>
+
+        <mat-error *ngIf="loginError" class="error-message">
+          {{ loginError }}
+        </mat-error>
+
+        <div class="forgot-password">
+          <a (click)="toggleForgotPassword()">Forgot Password?</a>
+        </div>
+
+          <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="loginForm.invalid">
+            Login
+          </button>
+        </form>
+
+        <form *ngIf="showForgotPassword" [formGroup]="forgotPasswordForm" (ngSubmit)="sendResetLink()" class="center-content">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Email</mat-label>
+            <input matInput formControlName="email" required>
+            <mat-icon matSuffix>email</mat-icon>
+            <mat-error *ngIf="email?.invalid && (email?.dirty || email?.touched)" class="error-message">
+              <span *ngIf="email?.hasError('required')">Email is required</span>
+              <span *ngIf="email?.hasError('email')">Please enter a valid email</span>
+            </mat-error>
+          </mat-form-field>
+
+          <mat-error *ngIf="forgotPasswordError" class="error-message">
+            {{ forgotPasswordError }}
+          </mat-error>
+
+          <mat-error *ngIf="forgotPasswordSuccess" class="success-message">
+            {{ forgotPasswordSuccess }}
+          </mat-error>
+
+          <div class="back-to-login">
+            <a (click)="toggleForgotPassword()">Back to Login</a>
+          </div>
+
+          <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="forgotPasswordForm.invalid">
+            Send Reset Link
+          </button>
+        </form>
+      </div>
+    </mat-card-content>
+  </mat-card>
+</div>

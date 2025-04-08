@@ -1,0 +1,8 @@
+<div class="form-container mat-elevation-z2">
+  <h5 *ngIf="sectionHeader">{{ sectionHeader }}</h5>
+  <div class="form-header">
+    <h6>{{ subSectionHeader }}</h6>
+    <button *ngIf="subSectionLinkText" mat-button color="primary" (click)="onLinkClick()">{{ subSectionLinkText }}</button>
+  </div>
+  <ng-content></ng-content>
+</div>

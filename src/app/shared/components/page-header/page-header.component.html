@@ -1,0 +1,17 @@
+<header>
+  <mat-toolbar *ngIf="fragments.length" class="navigation-header">
+    <button *ngFor="let fragment of fragments" mat-button [routerLink]="[]" [fragment]="fragment.id"
+      [class.active]="isFragmentActive(fragment.id)">
+      {{ fragment.value }}
+    </button>
+  </mat-toolbar>
+  <div class="non-navigation-header">
+    <button mat-icon-button class="back-button" (click)="onBackClick()" *ngIf="showBackButton">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <h1 *ngIf="showTitle">{{ pageTitle }}</h1>
+    <span class="spacer"></span>
+    <ng-content>
+    </ng-content>
+  </div>
+</header>

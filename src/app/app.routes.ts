@@ -1,3 +1,56 @@
 import { Routes } from '@angular/router';
+import { LoginComponent } from '@pages/login/login.component';
+import { DashboardComponent } from '@pages/dashboard/dashboard.component';
+import { UsersComponent } from '@pages/users/users.component';
+import { UsersDetailComponent } from '@pages/users-detail/users-detail.component';
+import { authGuard } from '@guards/auth.guard';
+import { ResetPasswordComponent } from '@pages/reset-password/reset-password.component';
+import { NotFoundComponent } from '@pages/not-found/not-found.component';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+  {
+    path: 'login',
+    component: LoginComponent,
+    title: 'Login'
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+    title: 'Reset Password'
+  },
+  {
+    path: '',
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'dashboard',
+        component: DashboardComponent,
+        title: 'Dashboard'
+      },
+      {
+        path: 'users',
+        children: [
+          {
+            path: '',
+            component: UsersComponent,
+            title: 'Users'
+          },
+          {
+            path: ':username',
+            component: UsersDetailComponent,
+          }
+        ]
+      },
+      {
+        path: '',
+        pathMatch: 'full',
+        redirectTo: 'dashboard'
+      }
+    ]
+  },
+  {
+    path: '**',
+    component: NotFoundComponent,
+    title: 'Page Not Found'
+  }
+];

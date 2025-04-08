@@ -1,0 +1,41 @@
+<mat-drawer-container class="drawer">
+  <mat-drawer #drawer mode="side" [opened]="sidenavOpen" class="sidenav">
+    <mat-nav-list>
+      <img src="assets/company-logo-alt.png" alt="Logo" class="logo">
+      <mat-accordion displayMode="flat" [multi]="false">
+        <ng-container *ngFor="let link of navItems">
+          <ng-container *ngIf="!link.children; else expandable">
+            <a mat-list-item [routerLink]="link.url" routerLinkActive="active-link" >
+              <div class="link-description">
+                <mat-icon>{{ link.icon }}</mat-icon>
+                <span>{{ link.name }}</span>
+              </div>
+            </a>
+          </ng-container>
+
+          <ng-template #expandable>
+            <mat-expansion-panel class='mat-elevation-z'>
+              <mat-expansion-panel-header>
+                <mat-icon>{{ link.icon }}</mat-icon>
+                <span>{{ link.name }}</span>
+              </mat-expansion-panel-header>
+              <mat-nav-list>
+                <a *ngFor="let child of link.children" mat-list-item [routerLink]="child.url"
+                  routerLinkActive="active-link" class="child-link">
+                  <div class="link-description">
+                    <mat-icon>{{ child.icon }}</mat-icon>
+                    <span>{{ child.name }}</span>
+                  </div>
+                </a>
+              </mat-nav-list>
+            </mat-expansion-panel>
+          </ng-template>
+        </ng-container>
+      </mat-accordion>
+    </mat-nav-list>
+  </mat-drawer>
+  <mat-drawer-content>
+    <ng-content></ng-content>
+  </mat-drawer-content>
+</mat-drawer-container>
+<app-scroll-to-top containerSelector=".mat-drawer-content"></app-scroll-to-top>

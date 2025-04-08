@@ -1,0 +1,141 @@
+import {
+  Component,
+  Input,
+  ViewChild,
+  AfterViewInit,
+  Output,
+  EventEmitter,
+  OnInit,
+  inject,
+  OnChanges,
+  SimpleChanges
+} from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { MaterialModule } from '@modules/material.module';
+import { MatSort, MatSortModule } from '@angular/material/sort';
+import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
+import { MatTableDataSource, MatTableModule } from '@angular/material/table';
+import { ApiService } from '@services/api.service';
+
+interface ColumnMapping {
+  key: string;
+  label: string;
+  visible: boolean;
+}
+
+@Component({
+  selector: 'app-view-table',
+  standalone: true,
+  imports: [CommonModule, MaterialModule, MatTableModule, MatSortModule, MatPaginatorModule],
+  templateUrl: './view-table.component.html',
+  styleUrls: ['./view-table.component.scss'],
+})
+export class ViewTableComponent implements OnInit, AfterViewInit, OnChanges {
+  apiService: ApiService = inject(ApiService);
+
+  @Input() apiUrl: string = '';
+  @Input() columnMappings: ColumnMapping[] = [];
+  @Input() showTopButtons: boolean = true;
+  @Input() data: any[] = [];
+  @Output() rowClick = new EventEmitter<any>();
+
+  private _data: any[] = [];
+  @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  dataSource!: MatTableDataSource<any>;
+
+  displayedColumns: string[] = [];
+  allColumnsSelected = false;
+
+  ngOnInit(): void {
+    this.updateDisplayedColumns();
+    this.checkAllColumnsSelected();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['data']) {
+      this._data = changes['data'].currentValue;
+      this.initializeDataSource();
+    }
+  }
+
+  ngAfterViewInit() {
+    this.initializeDataSource();
+  }
+
+  private initializeDataSource() {
+    this.dataSource = new MatTableDataSource(this._data);
+    if (this.sort) {
+      this.dataSource.sort = this.sort;
+      // Configure sorting for nested properties
+      this.dataSource.sortingDataAccessor = (item, property) => {
+        if (property.includes('.')) {
+          const [parent, child] = property.split('.');
+          return item[parent]?.[child] ?? '';
+        }
+        return item[property] ?? '';
+      };
+    }
+    if (this.paginator) {
+      this.dataSource.paginator = this.paginator;
+    }
+  }
+
+  private updateDisplayedColumns(): void {
+    this.displayedColumns = this.columnMappings
+      .filter(col => col.visible)
+      .map(col => col.key);
+  }
+
+  private checkAllColumnsSelected(): void {
+    this.allColumnsSelected = this.columnMappings.every(col => col.visible);
+  }
+
+  toggleColumn(column: ColumnMapping): void {
+    column.visible = !column.visible;
+    this.checkAllColumnsSelected();
+    this.updateDisplayedColumns();
+  }
+
+  toggleAllColumns(): void {
+    this.allColumnsSelected = !this.allColumnsSelected;
+    this.columnMappings.forEach(col => {
+      col.visible = this.allColumnsSelected;
+    });
+    this.updateDisplayedColumns();
+  }
+
+  onRowClick(row: any): void {
+    this.rowClick.emit(row);
+  }
+
+  onExportTable(): void {
+    const csvData = this.convertToCSV(this.dataSource.data);
+    this.downloadCSV(csvData);
+  }
+
+  convertToCSV(data: any[]): string {
+    const visibleColumns = this.columnMappings.filter(col => col.visible);
+    const header = visibleColumns.map(col => col.label).join('\t');
+    const rows = data.map(row =>
+      visibleColumns.map(col => {
+        const keys = col.key.split('.');
+        let value = row;
+        for (const key of keys) {
+          value = value?.[key] ?? '';
+        }
+        return value;
+      }).join('\t')
+    );
+    return [header, ...rows].join('\n');
+  }
+
+  downloadCSV(csvData: string): void {
+    const excelFormattedData = 'sep=\t\n' + csvData;
+    const blob = new Blob([excelFormattedData], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'table-data.csv';
+    link.click();
+  }
+}

@@ -1,0 +1,8 @@
+<ng-container *ngIf="isLoggedIn$ | async">
+  <app-sidenav [sidenavOpen]="sidenavOpen">
+    <app-header (sidenavToggle)="toggleSidenav()"></app-header>
+    <div class="router-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+  </app-sidenav>
+</ng-container>

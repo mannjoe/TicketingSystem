@@ -1,0 +1,37 @@
+.form-container {
+  margin-top: 10px;
+  background-color: white;
+  border-radius: 8px;
+  padding: 24px;
+  overflow: hidden; // prevents children from overflowing
+  box-sizing: border-box; // ensures padding is included in width/height
+
+  .form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 10px 0;
+    flex-wrap: wrap; // ensures children wrap if too wide
+    gap: 10px; // optional, keeps space if wrapping
+  }
+
+  h5 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    border-bottom: 2px solid #ccc;
+    padding-bottom: 14px;
+    margin-bottom: 25px;
+    word-break: break-word; // handles long titles
+  }
+
+  h6 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    word-break: break-word; // prevents overflow from long words
+  }
+
+  button {
+    flex-shrink: 0; // keeps button from shrinking too small
+  }
+}

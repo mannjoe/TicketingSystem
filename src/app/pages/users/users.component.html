@@ -1,0 +1,75 @@
+<app-page-header>
+  <button mat-flat-button (click)="onCreateUser()">
+    <mat-icon>add</mat-icon>
+    Create User
+  </button>
+</app-page-header>
+
+<ng-template #createUser>
+  <form [formGroup]="userForm">
+    <div class="form-row">
+      <app-dynamic-input label="Username" inputType="text" [control]="usernameFormControl"
+        class="col-md-6"></app-dynamic-input>
+      <app-dynamic-input label="Role" inputType="dropdown" [control]="roleFormControl"
+        class="col-md-6" [options$]="availableRoles$"></app-dynamic-input>
+    </div>
+    <div class="form-row">
+      <app-dynamic-input label="Email" inputType="text" [control]="emailFormControl"
+        class="col-md-12"></app-dynamic-input>
+    </div>
+    <div class="form-row">
+      <app-dynamic-input label="First Name" inputType="text" [control]="firstNameFormControl"
+        class="col-md-6"></app-dynamic-input>
+      <app-dynamic-input label="Last Name" inputType="text" [control]="lastNameFormControl"
+        class="col-md-6"></app-dynamic-input>
+    </div>
+    <div class="form-row">
+      <app-dynamic-input label="Password" inputType="password" [control]="passwordFormControl"
+        class="col-md-6"></app-dynamic-input>
+      <app-dynamic-input label="Confirm Password" inputType="password"
+        [control]="confirmPasswordFormControl" class="col-md-6"></app-dynamic-input>
+    </div>
+  </form>
+</ng-template>
+
+<app-search-container [searchForm]="true" (event)="clearAllFilters()">
+  <form [formGroup]="filterForm">
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Username</mat-label>
+        <input matInput formControlName="username" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Name</mat-label>
+        <input matInput formControlName="fullName" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" />
+      </mat-form-field>
+    </div>
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Role</mat-label>
+        <mat-select formControlName="roles">
+          <mat-option *ngFor="let role of roleOptions" [value]="role.value">
+            {{ role.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="statuses">
+          <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+            {{ status.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+</app-search-container>
+
+<app-view-table [columnMappings]="tableColumns" [data]="displayedUsers" (rowClick)="onRowClick($event)">
+</app-view-table>

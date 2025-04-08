@@ -1,0 +1,113 @@
+.form-field {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 16px;
+
+  ::ng-deep {
+    .mat-mdc-form-field {
+      width: 100%;
+    }
+
+    .mat-mdc-form-field-infix {
+      width: 100%;
+    }
+
+    .mat-mdc-text-field-wrapper {
+      width: 100%;
+    }
+
+    .mat-mdc-form-field-subscript-wrapper {
+      display: none;
+    }
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+// Radio button styles
+.radio-group {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+}
+
+.radio-label {
+  color: rgba(0, 0, 0, 0.7);
+  font-size: 14px;
+  margin: 0 0 8px 8px;
+  display: block;
+}
+
+.radio-button {
+  margin-bottom: 8px;
+}
+
+::ng-deep {
+  .mat-radio-button {
+    margin: 0;
+  }
+
+  .mat-radio-label {
+    margin-left: 0;
+  }
+}
+
+// Styles for readonly state
+mat-form-field.readonly-field {
+  .mat-mdc-form-field-infix {
+    color: rgba(0, 0, 0, 0.87);
+  }
+
+
+  .mat-mdc-form-field-subscript-wrapper {
+    display: none;
+  }
+
+  // Make the input text more visible
+  input, textarea, .mat-mdc-select-value {
+    color: rgba(0, 0, 0, 0.87);
+    -webkit-text-fill-color: rgba(0, 0, 0, 0.87);
+  }
+
+  // Style the mat-select in readonly mode
+  .mat-mdc-select {
+    .mat-mdc-select-value {
+      color: rgba(0, 0, 0, 0.87);
+    }
+  }
+
+  // Make the label more visible but slightly lighter than the text
+  .mat-mdc-form-field-label {
+    color: rgba(0, 0, 0, 0.7) !important;
+  }
+
+  .mdc-floating-label {
+    color: rgba(0, 0, 0, 0.7) !important;
+  }
+
+  // Ensure the label stays visible when the field has a value
+  .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label,
+  .mat-mdc-form-field .mat-mdc-form-field-label {
+    color: rgba(0, 0, 0, 0.7) !important;
+  }
+
+  // Target the label specifically
+  ::ng-deep {
+    .mdc-floating-label {
+      color: rgba(0, 0, 0, 0.7) !important;
+    }
+    
+    .mat-mdc-form-field-label {
+      color: rgba(0, 0, 0, 0.7) !important;
+    }
+  }
+}
+
+.search-input {
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+}

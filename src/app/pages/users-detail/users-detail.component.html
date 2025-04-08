@@ -1,0 +1,38 @@
+<app-page-header [showBackButton]="true"> </app-page-header>
+
+<app-entity-details [title]="fullName" [navLinks]="navLinks" [(activeLink)]="activeTab">
+
+  <form [formGroup]="userForm">
+    <div *ngIf="activeTab === 'profile'" class="form-section">
+      <app-page-header>
+        <div class="button-group">
+          <button mat-button color="primary" (click)="isEditMode ? onSubmit() : toggleEditMode()">
+            {{ isEditMode ? "Save" : "Edit" }}
+          </button>
+        </div>
+      </app-page-header>
+      <section>
+        <div class="image-container">
+          <img src="assets/default-profile.jpg" alt="Profile" class="profile-img" />
+        </div>
+        <div class="form">
+          <div class="form-row">
+            <app-dynamic-input [isEditable]="isEditMode" label="First Name" type="text" [control]="firstNameFormControl">
+            </app-dynamic-input>
+            <app-dynamic-input [isEditable]="isEditMode" label="Last Name" type="text" [control]="lastNameFormControl">
+            </app-dynamic-input>
+            <app-dynamic-input [isEditable]="isEditMode" label="Email" type="text" [control]="emailFormControl">
+            </app-dynamic-input>
+          </div>
+          <div class="form-row no-justify">
+            <app-dynamic-input [isEditable]="isEditMode" label="Role" type="radio" [control]="roleFormControl"
+              [radioOptions]="roleOptions">
+            </app-dynamic-input>
+            <app-dynamic-input [isEditable]="isEditMode" label="Status" type="radio" [control]="activeFormControl"
+              [radioOptions]="statusOptions">
+            </app-dynamic-input>
+          </div>
+        </div>
+      </section>
+    </div>
+  </form>

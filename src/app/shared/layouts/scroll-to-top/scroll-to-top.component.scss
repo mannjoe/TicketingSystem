@@ -1,0 +1,11 @@
+.scroll-to-top {
+  position: fixed;
+  bottom: 2%;
+  right: 2%;
+  z-index: 1000;
+  transition: opacity 0.3s ease;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
