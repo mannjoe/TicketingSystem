@@ -45,10 +45,6 @@ export class ScrollToTopComponent implements AfterViewInit, OnDestroy {
     this.ngZone.run(() => {
       const isAtTop = this.container ? this.container.scrollTop === 0 : window.scrollY === 0;
       this.showScrollToTop = this.container ? this.container.scrollTop > 300 : window.scrollY > 300;
-
-      if (isAtTop) {
-        this.router.navigate([], { fragment: undefined, queryParamsHandling: 'preserve' });
-      }
     });
   }
 

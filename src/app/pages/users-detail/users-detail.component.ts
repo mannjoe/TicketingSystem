@@ -52,7 +52,6 @@ export class UsersDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeForm();
-    this.setupQueryParams();
 
     this.route.params
       .pipe(takeUntil(this.destroy$))
@@ -69,6 +68,7 @@ export class UsersDetailComponent implements OnInit, OnDestroy {
           relativeTo: this.route,
           queryParams: { tab: 'profile' },
           queryParamsHandling: 'merge',
+          replaceUrl: true
         });
       }
     });
@@ -77,14 +77,6 @@ export class UsersDetailComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this.destroy$.next();
     this.destroy$.complete();
-  }
-
-  private setupQueryParams() {
-    this.route.queryParams
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(queryParams => {
-        this.activeTab = queryParams['tab'] || 'profile';
-      });
   }
 
   private loadUserData(username: string) {

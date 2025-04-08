@@ -8,25 +8,25 @@
 <ng-template #createUser>
   <form [formGroup]="userForm">
     <div class="form-row">
-      <app-dynamic-input label="Username" inputType="text" [control]="usernameFormControl"
+      <app-dynamic-input label="Username" type="text" [control]="usernameFormControl"
         class="col-md-6"></app-dynamic-input>
-      <app-dynamic-input label="Role" inputType="dropdown" [control]="roleFormControl"
+      <app-dynamic-input label="Role" type="dropdown" [control]="roleFormControl"
         class="col-md-6" [options$]="availableRoles$"></app-dynamic-input>
     </div>
     <div class="form-row">
-      <app-dynamic-input label="Email" inputType="text" [control]="emailFormControl"
+      <app-dynamic-input label="Email" type="text" [control]="emailFormControl"
         class="col-md-12"></app-dynamic-input>
     </div>
     <div class="form-row">
-      <app-dynamic-input label="First Name" inputType="text" [control]="firstNameFormControl"
+      <app-dynamic-input label="First Name" type="text" [control]="firstNameFormControl"
         class="col-md-6"></app-dynamic-input>
-      <app-dynamic-input label="Last Name" inputType="text" [control]="lastNameFormControl"
+      <app-dynamic-input label="Last Name" type="text" [control]="lastNameFormControl"
         class="col-md-6"></app-dynamic-input>
     </div>
     <div class="form-row">
-      <app-dynamic-input label="Password" inputType="password" [control]="passwordFormControl"
+      <app-dynamic-input label="Password" type="password" [control]="passwordFormControl"
         class="col-md-6"></app-dynamic-input>
-      <app-dynamic-input label="Confirm Password" inputType="password"
+      <app-dynamic-input label="Confirm Password" type="password"
         [control]="confirmPasswordFormControl" class="col-md-6"></app-dynamic-input>
     </div>
   </form>

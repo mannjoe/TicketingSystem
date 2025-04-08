@@ -82,8 +82,9 @@
       [readonly]="!isEditable"
     ></textarea>
 
-    <mat-error *ngIf="control && control.hasError('required') && control.touched">
-      {{ label }} is required
+    <mat-error *ngIf="control && control.invalid && (control.dirty || control.touched)">
+      <span *ngIf="control.hasError('required')">{{ label }} is required</span>
+      <span *ngIf="control.hasError('email')">Please enter a valid email address</span>
     </mat-error>
   </mat-form-field>
 
