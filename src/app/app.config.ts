@@ -5,6 +5,7 @@ import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { authInterceptor } from '@interceptors/auth.interceptor';
 import { loadingInterceptor  } from '@interceptors/loading.interceptor';
+import { apiNotificationInterceptor } from '@interceptors/api-notification.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,7 +14,8 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(
       withInterceptors([
         authInterceptor,
-        loadingInterceptor 
+        loadingInterceptor,
+        apiNotificationInterceptor
       ])
     ),
     provideAnimationsAsync()

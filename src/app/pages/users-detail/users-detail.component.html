@@ -1,11 +1,30 @@
 <app-page-header [showBackButton]="true"> </app-page-header>
 
-<app-entity-details [title]="fullName" [navLinks]="navLinks" [(activeLink)]="activeTab">
+<app-entity-details [title]="firstName + ' ' + lastName" [navLinks]="navLinks" [(activeLink)]="activeTab">
+
+  <ng-template #changePassword>
+    <form [formGroup]="changePasswordForm">
+      <div class="form-row">
+        <app-dynamic-input label="Current Password" type="password"
+          [control]="currentPasswordFormControl"></app-dynamic-input>
+      </div>
+      <div class="form-row">
+        <app-dynamic-input label="New Password" type="password" [control]="newPasswordFormControl"></app-dynamic-input>
+      </div>
+      <div class="form-row">
+        <app-dynamic-input label="Confirm New Password" type="password"
+          [control]="confirmNewPasswordFormControl"></app-dynamic-input>
+      </div>
+    </form>
+  </ng-template>
 
   <form [formGroup]="userForm">
     <div *ngIf="activeTab === 'profile'" class="form-section">
       <app-page-header>
         <div class="button-group">
+          <button mat-button color="primary" (click)="onChangePassword()">
+            Change Password
+          </button>
           <button mat-button color="primary" (click)="isEditMode ? onSubmit() : toggleEditMode()">
             {{ isEditMode ? "Save" : "Edit" }}
           </button>
@@ -13,11 +32,12 @@
       </app-page-header>
       <section>
         <div class="image-container">
-          <img src="assets/default-profile.jpg" alt="Profile" class="profile-img" />
+          <img src="assets/user-profile.jpg" alt="Profile" class="profile-img" />
         </div>
         <div class="form">
           <div class="form-row">
-            <app-dynamic-input [isEditable]="isEditMode" label="First Name" type="text" [control]="firstNameFormControl">
+            <app-dynamic-input [isEditable]="isEditMode" label="First Name" type="text"
+              [control]="firstNameFormControl">
             </app-dynamic-input>
             <app-dynamic-input [isEditable]="isEditMode" label="Last Name" type="text" [control]="lastNameFormControl">
             </app-dynamic-input>

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@modules/material.module';
@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
   imports: [CommonModule, ReactiveFormsModule, MaterialModule],
   standalone: true
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private fb: FormBuilder = inject(FormBuilder);
   private authService: AuthService = inject(AuthService);
   private router: Router = inject(Router);
@@ -35,6 +35,12 @@ export class LoginComponent {
   get username() { return this.loginForm.get('username'); }
   get password() { return this.loginForm.get('password'); }
   get email() { return this.forgotPasswordForm.get('email'); }
+
+  ngOnInit(): void {
+    if (this.authService.isLoggedIn()) {
+      this.router.navigate(['']);
+    }
+  }
 
   toggleForgotPassword() {
     this.showForgotPassword = !this.showForgotPassword;

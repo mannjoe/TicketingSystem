@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { MaterialModule } from '@modules/material.module';
 import { PageHeaderComponent } from '@components/page-header/page-header.component';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ApiService } from '@services/api.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -18,7 +18,7 @@ import { ViewTableColumn } from '@interfaces/ViewTable.interface';
 import { USERS_COLUMN_MAPPINGS } from '@shared/constants';
 
 @Component({
-  selector: 'app-users',
+  selector: 'app-tickets',
   standalone: true,
   imports: [
     CommonModule,
@@ -29,12 +29,13 @@ import { USERS_COLUMN_MAPPINGS } from '@shared/constants';
     SearchContainerComponent,
     ViewTableComponent
   ],
-  templateUrl: './users.component.html',
-  styleUrl: './users.component.scss'
+  templateUrl: './tickets.component.html',
+  styleUrl: './tickets.component.scss'
 })
-export class UsersComponent implements OnInit {
+export class TicketsComponent implements OnInit {
   // Inject dependencies
   router = inject(Router);
+  route = inject(ActivatedRoute);
   fb = inject(FormBuilder);
   dialog = inject(MatDialog);
   apiService = inject(ApiService);
@@ -134,23 +135,8 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  onCreateUser(): void {
-    if (this.createUserTemplate) {
-      const dialogRef = this.dialog.open(DialogComponent, {
-        data: {
-          title: 'Create User',
-          contentTemplate: this.createUserTemplate,
-          formGroup: this.userForm,
-          apiUrl: this.usersEndpoint
-        },
-      });
-
-      dialogRef.afterClosed().subscribe(result => {
-        if (result) {
-          this.fetchUsers(); // Refresh the user list after creating a new user
-        }
-      });
-    }
+  onAddTicket(): void {
+    this.router.navigate(['create'], { relativeTo: this.route });
   }
 
   onRowClick(row: any): void {

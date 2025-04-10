@@ -61,6 +61,10 @@ export class AuthService {
     return user ? JSON.parse(user) : null;
   }
 
+  getUsername(): string | undefined {
+    return this.getCurrentUser()?.username;
+  }
+
   isLoggedIn(): boolean {
     return this.hasValidToken();
   }

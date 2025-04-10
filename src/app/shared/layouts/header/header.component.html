@@ -8,8 +8,7 @@
     <mat-icon>account_circle</mat-icon>
   </button>
   <mat-menu #profileMenu="matMenu">
-    <button mat-menu-item><mat-icon>person</mat-icon>My Profile</button>
-    <button mat-menu-item><mat-icon>lock</mat-icon>Change Password</button>
+    <button mat-menu-item [routerLink]="['/users', username]"><mat-icon>person</mat-icon>My Profile</button>
     <button mat-menu-item (click)="onLogOutClicked()"><mat-icon>logout</mat-icon>Log Out</button>
   </mat-menu>
 </mat-toolbar>

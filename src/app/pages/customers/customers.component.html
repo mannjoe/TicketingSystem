@@ -1,0 +1,64 @@
+<app-page-header>
+  <button mat-flat-button (click)="onCreateCustomer()">
+    <mat-icon>add</mat-icon>
+    Create Customer
+  </button>
+</app-page-header>
+
+<ng-template #createCustomer>
+  <form [formGroup]="customerForm">
+    <div class="form-row">
+      <app-dynamic-input label="Full Name" type="text" [control]="nameFormControl"></app-dynamic-input>
+    </div>
+    <div class="form-row">
+      <app-dynamic-input label="Type" type="dropdown" [control]="typeFormControl" [options$]="availableTypes$"></app-dynamic-input>
+      <app-dynamic-input label="Business Identifier" type="text" [control]="identifierNoFormControl"></app-dynamic-input>
+    </div>
+  </form>
+</ng-template>
+
+<app-search-container [searchForm]="true" (event)="clearAllFilters()">
+  <form [formGroup]="filterForm">
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Full Name</mat-label>
+        <input matInput formControlName="name" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Identifier No</mat-label>
+        <input matInput formControlName="identifierNo" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" />
+      </mat-form-field>
+    </div>
+    <div class="form-row">
+      <mat-form-field appearance="outline">
+        <mat-label>Phone</mat-label>
+        <input matInput formControlName="phone" />
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Type</mat-label>
+        <mat-select formControlName="types">
+          <mat-option *ngFor="let type of typeOptions" [value]="type.value">
+            {{ type.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select formControlName="statuses">
+          <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+            {{ status.label }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </form>
+</app-search-container>
+
+<app-view-table [columnMappings]="tableColumns" [data]="displayedCustomers" (rowClick)="onRowClick($event)">
+</app-view-table>

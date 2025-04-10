@@ -46,8 +46,12 @@ export class ViewTableComponent implements OnInit, AfterViewInit, OnChanges {
 
   displayedColumns: string[] = [];
   allColumnsSelected = false;
+  visibleColumnKeys: string[] = [];
 
   ngOnInit(): void {
+    this.visibleColumnKeys = this.columnMappings
+      .filter(col => col.visible)
+      .map(col => col.key);
     this.updateDisplayedColumns();
     this.checkAllColumnsSelected();
   }
@@ -67,7 +71,6 @@ export class ViewTableComponent implements OnInit, AfterViewInit, OnChanges {
     this.dataSource = new MatTableDataSource(this._data);
     if (this.sort) {
       this.dataSource.sort = this.sort;
-      // Configure sorting for nested properties
       this.dataSource.sortingDataAccessor = (item, property) => {
         if (property.includes('.')) {
           const [parent, child] = property.split('.');
@@ -82,9 +85,7 @@ export class ViewTableComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   private updateDisplayedColumns(): void {
-    this.displayedColumns = this.columnMappings
-      .filter(col => col.visible)
-      .map(col => col.key);
+    this.displayedColumns = this.visibleColumnKeys;
   }
 
   private checkAllColumnsSelected(): void {
@@ -93,15 +94,36 @@ export class ViewTableComponent implements OnInit, AfterViewInit, OnChanges {
 
   toggleColumn(column: ColumnMapping): void {
     column.visible = !column.visible;
+
+    if (column.visible) {
+      if (!this.visibleColumnKeys.includes(column.key)) {
+        this.visibleColumnKeys.push(column.key);
+      }
+    } else {
+      this.visibleColumnKeys = this.visibleColumnKeys.filter(key => key !== column.key);
+    }
+
     this.checkAllColumnsSelected();
     this.updateDisplayedColumns();
   }
 
   toggleAllColumns(): void {
     this.allColumnsSelected = !this.allColumnsSelected;
+
+    if (this.allColumnsSelected) {
+      const currentlyVisible = new Set(this.visibleColumnKeys);
+      const newVisible = this.columnMappings
+        .map(col => col.key)
+        .filter(key => !currentlyVisible.has(key));
+      this.visibleColumnKeys = [...this.visibleColumnKeys, ...newVisible];
+    } else {
+      this.visibleColumnKeys = [];
+    }
+
     this.columnMappings.forEach(col => {
       col.visible = this.allColumnsSelected;
     });
+
     this.updateDisplayedColumns();
   }
 
@@ -115,7 +137,9 @@ export class ViewTableComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   convertToCSV(data: any[]): string {
-    const visibleColumns = this.columnMappings.filter(col => col.visible);
+    const visibleColumns = this.columnMappings.filter(col =>
+      this.visibleColumnKeys.includes(col.key)
+    );
     const header = visibleColumns.map(col => col.label).join('\t');
     const rows = data.map(row =>
       visibleColumns.map(col => {

@@ -5,8 +5,8 @@ export const navItems = [
     icon: 'dashboard',
   },
   {
-    name: 'Ticket',
-    url: '/ticket',
+    name: 'Tickets',
+    url: '/tickets',
     icon: 'confirmation_number',
   },
   {
@@ -24,10 +24,5 @@ export const navItems = [
         icon: 'badge '
       },
     ]
-  },
-  {
-    name: 'Help',
-    url: '/help',
-    icon: 'help'
   }
 ];

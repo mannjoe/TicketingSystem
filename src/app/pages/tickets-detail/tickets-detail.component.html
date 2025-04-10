@@ -1,0 +1,36 @@
+<app-page-header [showBackButton]="true"> </app-page-header>
+
+<app-entity-details [title]="code" [navLinks]="navLinks" [(activeLink)]="activeTab">
+
+  <form [formGroup]="ticketForm">
+    <div *ngIf="activeTab === 'description'" class="form-section">
+      <app-page-header>
+        <div class="button-group">
+          <button mat-button color="primary" (click)="isEditMode ? onSubmit() : toggleEditMode()">
+            {{ isEditMode ? "Save" : "Edit" }}
+          </button>
+        </div>
+      </app-page-header>
+      <section>
+        <div class="form">
+          <div class="form-row">
+            <app-dynamic-input label="Status" type="dropdown" [control]="statusFormControl">
+            </app-dynamic-input>
+            <app-dynamic-input label="Due Date" type="date"
+              [control]="dueDateFormControl">
+            </app-dynamic-input>
+            <app-dynamic-input label="Assignee" type="dropdown" [control]="assigneeFormControl">
+            </app-dynamic-input>
+            <app-dynamic-input label="Reporter" type="dropdown" [control]="reporterFormControl">
+            </app-dynamic-input>
+          </div>
+          <div class="form-row">
+            <app-dynamic-input label="Request By" type="dropdown" [control]="requestByFormControl">
+            </app-dynamic-input>
+          </div>
+          <app-dynamic-input label="Description" type="textarea" [control]="descriptionFormControl">
+          </app-dynamic-input>
+        </div>
+      </section>
+    </div>
+  </form>

@@ -1,11 +1,13 @@
 <mat-drawer-container class="drawer">
   <mat-drawer #drawer mode="side" [opened]="sidenavOpen" class="sidenav">
     <mat-nav-list>
-      <img src="assets/company-logo-alt.png" alt="Logo" class="logo">
+      <a routerLink="/">
+        <img src="assets/company-logo-alt.png" alt="Logo" class="logo">
+      </a>
       <mat-accordion displayMode="flat" [multi]="false">
         <ng-container *ngFor="let link of navItems">
           <ng-container *ngIf="!link.children; else expandable">
-            <a mat-list-item [routerLink]="link.url" routerLinkActive="active-link" >
+            <a mat-list-item [routerLink]="link.url" routerLinkActive="active-link">
               <div class="link-description">
                 <mat-icon>{{ link.icon }}</mat-icon>
                 <span>{{ link.name }}</span>

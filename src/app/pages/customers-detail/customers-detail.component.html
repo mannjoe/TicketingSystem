@@ -1,0 +1,43 @@
+<app-page-header [showBackButton]="true"> </app-page-header>
+
+<app-entity-details [title]="name" [navLinks]="navLinks" [(activeLink)]="activeTab">
+
+  <form [formGroup]="customerForm">
+    <div *ngIf="activeTab === 'profile'" class="form-section">
+      <app-page-header>
+        <div class="button-group">
+          <button mat-button color="primary" (click)="isEditMode ? onSubmit() : toggleEditMode()">
+            {{ isEditMode ? "Save" : "Edit" }}
+          </button>
+        </div>
+      </app-page-header>
+      <section>
+        <div class="image-container">
+          <img src="assets/company-profile.png" alt="Profile" class="profile-img" />
+        </div>
+        <div class="form">
+          <div class="form-row">
+            <app-dynamic-input [isEditable]="isEditMode" label="Full name" type="text" [control]="nameFormControl">
+            </app-dynamic-input>
+            <app-dynamic-input [isEditable]="isEditMode" label="Identifier No" type="text"
+              [control]="identifierNoFormControl">
+            </app-dynamic-input>
+            <app-dynamic-input [isEditable]="isEditMode" label="Email" type="text" [control]="emailFormControl">
+            </app-dynamic-input>
+          </div>
+          <div class="form-row">
+            <app-dynamic-input [isEditable]="isEditMode" label="Phone" type="text" [control]="phoneFormControl">
+            </app-dynamic-input>
+            <app-dynamic-input [isEditable]="isEditMode" label="Type" type="radio" [control]="typeFormControl"
+              [radioOptions]="typeOptions">
+            </app-dynamic-input>
+            <app-dynamic-input [isEditable]="isEditMode" label="Status" type="radio" [control]="activeFormControl"
+              [radioOptions]="statusOptions">
+            </app-dynamic-input>
+          </div>
+          <app-dynamic-input [isEditable]="isEditMode" label="Address" type="textarea" [control]="addressFormControl">
+          </app-dynamic-input>
+        </div>
+      </section>
+    </div>
+  </form>

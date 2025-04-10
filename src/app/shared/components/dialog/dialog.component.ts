@@ -4,7 +4,6 @@ import { MaterialModule } from '@modules/material.module';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormGroup } from '@angular/forms';
 import { ApiService } from '@services/api.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-dialog',
@@ -15,12 +14,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 })
 export class DialogComponent {
   apiService = inject(ApiService);
-  snackBar = inject(MatSnackBar);
 
   title: string;
   contentTemplate: TemplateRef<any> | null;
   formGroup: FormGroup;
   apiUrl: string;
+  method: 'POST' | 'PUT';  // Determines whether to use POST or PUT for the request
+  buttonText: string;
 
   constructor(
     public dialogRef: MatDialogRef<DialogComponent>,
@@ -30,37 +30,38 @@ export class DialogComponent {
     this.contentTemplate = data.contentTemplate || null;
     this.formGroup = data.formGroup || new FormGroup({});
     this.apiUrl = data.apiUrl || '';
+    this.method = data.method || 'POST';  // Default to POST if no method provided
+    this.buttonText = this.method === 'POST' ? 'Create' : 'Update';  // Adjust button text
     this.dialogRef.disableClose = true;
   }
 
-  onCreate(): void {
+  onSubmit(): void {
     if (this.formGroup.valid) {
       const payload = this.formGroup.value;
 
-      this.apiService.post(this.apiUrl, payload).subscribe({
-        next: (response) => {
-          this.resetForm();
-          this.dialogRef.close(response);
-
-          this.snackBar.open('Operation successful', 'Close', {
-            duration: 3000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-            panelClass: ['success-snackbar'],
-          });
-        },
-        error: (error) => {
-          console.error('API Error:', error);
-
-          // Show error Snackbar
-          this.snackBar.open('Operation failed', 'Close', {
-            duration: 3000,
-            verticalPosition: 'top',
-            horizontalPosition: 'center',
-            panelClass: ['error-snackbar'],
-          });
-        },
-      });
+      if (this.method === 'POST') {
+        // Perform POST (Create) request
+        this.apiService.post(this.apiUrl, payload).subscribe({
+          next: (response) => {
+            this.resetForm();
+            this.dialogRef.close(response);
+          },
+          error: (error) => {
+            console.error('API Error:', error);
+          },
+        });
+      } else if (this.method === 'PUT') {
+        // Perform PUT (Update) request
+        this.apiService.put(this.apiUrl, payload).subscribe({
+          next: (response) => {
+            this.resetForm();
+            this.dialogRef.close(response);
+          },
+          error: (error) => {
+            console.error('API Error:', error);
+          },
+        });
+      }
     }
   }
 
