@@ -1,92 +1,114 @@
 <div class="form-field">
-  <mat-form-field [ngClass]="{ 'readonly-field': !isEditable }" *ngIf="type !== 'radio'">
+  <!-- Regular inputs (text, number, password, textarea) -->
+  <mat-form-field [ngClass]="{ 'readonly-field': !isEditable }" *ngIf="type !== 'radio' && type !== 'editor' && type !== 'date' && type !== 'dropdown'">
     <mat-label>{{ label }}</mat-label>
 
     <!-- Text Input -->
-    <input
-      matInput
-      *ngIf="type === 'text'"
-      [formControl]="control"
-      [readonly]="!isEditable"
-    />
+    <input matInput *ngIf="type === 'text'" [formControl]="control" [readonly]="!isEditable" />
 
     <!-- Password Input -->
-    <input
-      matInput
-      *ngIf="type === 'password'"
-      [type]="isPasswordHidden ? 'password' : 'text'"
-      [formControl]="control"
-      [readonly]="!isEditable"
-    />
-    <button
-      *ngIf="type === 'password' && isEditable"
-      mat-icon-button
-      matSuffix
-      (click)="isPasswordHidden = !isPasswordHidden"
-      [attr.aria-label]="'Hide password'"
-      [attr.aria-pressed]="isPasswordHidden"
-    >
+    <input matInput *ngIf="type === 'password'" [type]="isPasswordHidden ? 'password' : 'text'" [formControl]="control"
+      [readonly]="!isEditable" />
+    <button *ngIf="type === 'password' && isEditable" mat-icon-button matSuffix
+      (click)="isPasswordHidden = !isPasswordHidden" [attr.aria-label]="'Hide password'"
+      [attr.aria-pressed]="isPasswordHidden">
       <mat-icon>{{ isPasswordHidden ? 'visibility_off' : 'visibility' }}</mat-icon>
     </button>
 
     <!-- Number Input -->
-    <input
-      matInput
-      *ngIf="type === 'number'"
-      type="number"
-      [formControl]="control"
-      [readonly]="!isEditable"
-    />
-
-    <!-- Date Input -->
-    <input
-      matInput
-      *ngIf="type === 'date'"
-      type="date"
-      [formControl]="control"
-      [readonly]="!isEditable"
-    />
-
-    <!-- Dropdown -->
-    <mat-select
-      *ngIf="type === 'dropdown'"
-      [formControl]="control"
-      [disabled]="!isEditable"
-    >
-      <!-- Search input inside the dropdown -->
-      <input
-        *ngIf="optionDisplayFields.length > 0"
-        type="text"
-        [(ngModel)]="filterText"
-        (keyup)="onFilterChange(filterText)"
-        (click)="$event.stopPropagation()"
-        placeholder="Search..."
-        class="search-input"
-      />
-
-      <!-- Filtered options -->
-      <mat-option
-        *ngFor="let option of filteredOptionsSource$ | async"
-        [value]="optionDisplayFields.length > 0 ? option.id : option"
-      >
-        {{ optionDisplayFields.length > 0 ? formatOption(option) : option }}
-      </mat-option>
-    </mat-select>
+    <input matInput *ngIf="type === 'number'" type="number" [formControl]="control" [readonly]="!isEditable" />
 
     <!-- Textarea -->
-    <textarea
-      matInput
-      *ngIf="type === 'textarea'"
-      [formControl]="control"
-      rows="5"
-      [readonly]="!isEditable"
-    ></textarea>
+    <textarea matInput *ngIf="type === 'textarea'" [formControl]="control" rows="5" [readonly]="!isEditable"></textarea>
 
     <mat-error *ngIf="control && control.invalid && (control.dirty || control.touched)">
       <span *ngIf="control.hasError('required')">{{ label }} is required</span>
       <span *ngIf="control.hasError('email')">Please enter a valid email address</span>
     </mat-error>
   </mat-form-field>
+
+  <!-- Dropdown -->
+  <mat-form-field *ngIf="type === 'dropdown'" [ngClass]="{ 'readonly-field': !isEditable }">
+    <mat-label>{{ label }}</mat-label>
+    <mat-select [formControl]="control" [disabled]="!isEditable">
+      <!-- Search input inside the dropdown -->
+      <input *ngIf="totalOptionsLength > 10" type="text" [(ngModel)]="filterText"
+        (keyup)="onFilterChange(filterText)" (click)="$event.stopPropagation()" placeholder="Search..."
+        class="search-input" />
+
+      <!-- Filtered options -->
+      <mat-option *ngFor="let option of filteredOptionsSource$ | async" [value]="getOptionValue(option)">
+        {{ formatOption(option) }}
+      </mat-option>
+    </mat-select>
+    <mat-error *ngIf="control && control.invalid && (control.dirty || control.touched)">
+      <span *ngIf="control.hasError('required')">{{ label }} is required</span>
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Date Input -->
+  <mat-form-field *ngIf="type === 'date'" [ngClass]="{ 'readonly-field': !isEditable }">
+    <mat-label>{{ label }}</mat-label>
+    <input matInput [matDatepicker]="picker" [formControl]="control" [readonly]="!isEditable" />
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+    <mat-error *ngIf="control && control.invalid && (control.dirty || control.touched)">
+      <span *ngIf="control.hasError('required')">{{ label }} is required</span>
+    </mat-error>
+  </mat-form-field>
+
+  <!-- Rich Text Editor -->
+  <div *ngIf="type === 'editor'" class="editor-container">
+    <label>{{ label }}</label>
+    <angular-editor [formControl]="control" [config]="{
+        editable: isEditable,
+        spellcheck: true,
+        height: 'auto',
+        minHeight: '200px',
+        maxHeight: 'auto',
+        width: 'auto',
+        minWidth: '0',
+        translate: 'yes',
+        enableToolbar: true,
+        showToolbar: true,
+        placeholder: 'Enter text here...',
+        defaultParagraphSeparator: '',
+        defaultFontName: '',
+        defaultFontSize: '',
+        fonts: [
+          {class: 'arial', name: 'Arial'},
+          {class: 'times-new-roman', name: 'Times New Roman'},
+          {class: 'calibri', name: 'Calibri'},
+          {class: 'comic-sans-ms', name: 'Comic Sans MS'}
+        ],
+        customClasses: [
+          {
+            name: 'quote',
+            class: 'quote',
+          },
+          {
+            name: 'redText',
+            class: 'redText'
+          },
+          {
+            name: 'titleText',
+            class: 'titleText',
+            tag: 'h1',
+          },
+        ],
+        uploadUrl: 'v1/image',
+        uploadWithCredentials: false,
+        sanitize: true,
+        toolbarPosition: 'top',
+        toolbarHiddenButtons: [
+          ['bold', 'italic'],
+          ['fontSize']
+        ]
+      }"></angular-editor>
+    <mat-error *ngIf="control && control.invalid && (control.dirty || control.touched)">
+      <span *ngIf="control.hasError('required')">{{ label }} is required</span>
+    </mat-error>
+  </div>
 
   <!-- Radio Buttons -->
   <div *ngIf="type === 'radio'" class="form-field">
@@ -96,5 +118,8 @@
         {{ option.label }}
       </mat-radio-button>
     </mat-radio-group>
+    <mat-error *ngIf="control && control.invalid && (control.dirty || control.touched)">
+      <span *ngIf="control.hasError('required')">{{ label }} is required</span>
+    </mat-error>
   </div>
 </div>

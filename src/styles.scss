@@ -60,3 +60,7 @@ mat-icon {
     --mdc-snackbar-supporting-text-color: #fff;
   }
 }
+
+.cdk-overlay-container {
+  z-index: 500 !important;
+}

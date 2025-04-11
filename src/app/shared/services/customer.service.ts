@@ -11,6 +11,14 @@ export class CustomerService {
   getCustomerById(id: number) {
     return this.apiService.get(joinUrl(environment.apiUrl, `customers/by-id/${id}`));
   }
+  
+  getAllCustomers(): Observable<any> {
+    return this.apiService.get(joinUrl(environment.apiUrl, 'customers'));
+  }
+
+  getAllTypes(): Observable<any> {
+    return this.apiService.get(joinUrl(environment.apiUrl, 'customers/types'))
+  }
 
   updateCustomer(values: any): Observable<any> {
     return this.apiService.put(joinUrl(environment.apiUrl, `customers/${values.id}`), values);

@@ -35,7 +35,7 @@
           {{ col.label }}
         </th>
         <td mat-cell *matCellDef="let element">
-          {{ col.key.includes('.') ? element[col.key.split('.')[0]]?.[col.key.split('.')[1]] : element[col.key] }}
+          {{ getNestedValue(element, col.key) }}
         </td>
       </ng-container>
     </ng-container>

@@ -5,33 +5,12 @@
   </button>
 </app-page-header>
 
-<ng-template #createUser>
-  <form [formGroup]="userForm">
-    <div class="form-row">
-      <app-dynamic-input label="Username" type="text" [control]="usernameFormControl"></app-dynamic-input>
-      <app-dynamic-input label="Role" type="dropdown" [control]="roleFormControl" [options$]="availableRoles$"></app-dynamic-input>
-    </div>
-    <div class="form-row">
-      <app-dynamic-input label="Email" type="text" [control]="emailFormControl"></app-dynamic-input>
-    </div>
-    <div class="form-row">
-      <app-dynamic-input label="First Name" type="text" [control]="firstNameFormControl"></app-dynamic-input>
-      <app-dynamic-input label="Last Name" type="text" [control]="lastNameFormControl"></app-dynamic-input>
-    </div>
-    <div class="form-row">
-      <app-dynamic-input label="Password" type="password" [control]="passwordFormControl"></app-dynamic-input>
-      <app-dynamic-input label="Confirm Password" type="password"
-        [control]="confirmPasswordFormControl"></app-dynamic-input>
-    </div>
-  </form>
-</ng-template>
-
 <app-search-container [searchForm]="true" (event)="clearAllFilters()">
   <form [formGroup]="filterForm">
     <div class="form-row">
       <mat-form-field appearance="outline">
-        <mat-label>Username</mat-label>
-        <input matInput formControlName="username" />
+        <mat-label>Code</mat-label>
+        <input matInput formControlName="code" />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
@@ -48,9 +27,6 @@
       <mat-form-field appearance="outline">
         <mat-label>Role</mat-label>
         <mat-select formControlName="roles">
-          <mat-option *ngFor="let role of roleOptions" [value]="role.value">
-            {{ role.label }}
-          </mat-option>
         </mat-select>
       </mat-form-field>
       <mat-form-field appearance="outline">
@@ -65,5 +41,5 @@
   </form>
 </app-search-container>
 
-<app-view-table [columnMappings]="tableColumns" [data]="displayedUsers" (rowClick)="onRowClick($event)">
+<app-view-table [columnMappings]="tableColumns" [data]="displayedTickets" (rowClick)="onRowClick($event)">
 </app-view-table>

@@ -137,19 +137,12 @@ export class ViewTableComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   convertToCSV(data: any[]): string {
-    const visibleColumns = this.columnMappings.filter(col =>
+    const visibleColumns = this.columnMappings.filter(col => 
       this.visibleColumnKeys.includes(col.key)
     );
     const header = visibleColumns.map(col => col.label).join('\t');
     const rows = data.map(row =>
-      visibleColumns.map(col => {
-        const keys = col.key.split('.');
-        let value = row;
-        for (const key of keys) {
-          value = value?.[key] ?? '';
-        }
-        return value;
-      }).join('\t')
+      visibleColumns.map(col => this.getNestedValue(row, col.key)).join('\t')
     );
     return [header, ...rows].join('\n');
   }
@@ -161,5 +154,9 @@ export class ViewTableComponent implements OnInit, AfterViewInit, OnChanges {
     link.href = URL.createObjectURL(blob);
     link.download = 'table-data.csv';
     link.click();
+  }
+
+  getNestedValue(obj: any, path: string): any {
+    return path.split('.').reduce((o, p) => (o ? o[p] : ''), obj);
   }
 }

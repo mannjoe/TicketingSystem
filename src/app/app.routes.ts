@@ -72,6 +72,10 @@ export const routes: Routes = [
             path: 'create',
             component: TicketsDetailComponent,
             title: 'Create Ticket'
+          },
+          {
+            path: ':code',
+            component: TicketsDetailComponent,
           }
         ]
       },

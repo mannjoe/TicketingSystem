@@ -12,6 +12,18 @@ export class UserService {
     return this.apiService.get(joinUrl(environment.apiUrl, `users/by-username/${username}`));
   }
 
+  getAllUsers(): Observable<any> {
+    return this.apiService.get(joinUrl(environment.apiUrl, 'users'));
+  }
+
+  getActiveUsers(): Observable<any> {
+    return this.apiService.get(joinUrl(environment.apiUrl, 'users/active'));
+  }
+
+  getAllRoles(): Observable<any> {
+    return this.apiService.get(joinUrl(environment.apiUrl, 'users/roles'))
+  }
+
   updateUser(values: any): Observable<any> {
     return this.apiService.put(joinUrl(environment.apiUrl, `users/${values.username}`), values);
   }

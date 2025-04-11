@@ -16,6 +16,7 @@ import { SearchContainerComponent } from '@components/search-container/search-co
 import { ViewTableComponent } from '@components/view-table/view-table.component';
 import { ViewTableColumn } from '@interfaces/ViewTable.interface';
 import { USERS_COLUMN_MAPPINGS } from '@shared/constants';
+import { UserService } from '@services/user.service';
 
 @Component({
   selector: 'app-users',
@@ -37,10 +38,10 @@ export class UsersComponent implements OnInit {
   router = inject(Router);
   fb = inject(FormBuilder);
   dialog = inject(MatDialog);
-  apiService = inject(ApiService);
+  userService = inject(UserService)
 
   // Observable data
-  availableRoles$: Observable<string[]> = this.apiService.get(joinUrl(environment.apiUrl, 'users/roles'));
+  availableRoles$: Observable<any[]> = this.userService.getAllRoles();
   usersEndpoint: string = joinUrl(environment.apiUrl, 'users');
   tableColumns: ViewTableColumn[] = USERS_COLUMN_MAPPINGS;
 
@@ -109,7 +110,7 @@ export class UsersComponent implements OnInit {
   }
 
   private fetchUsers(): void {
-    this.apiService.get<any[]>(this.usersEndpoint).subscribe({
+    this.userService.getAllUsers().subscribe({
       next: (response) => {
         this.users = response;
         this.displayedUsers = [...this.users];

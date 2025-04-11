@@ -44,6 +44,7 @@ export class UsersDetailComponent implements OnInit, OnDestroy {
   isEditMode = false;
   activeTab = 'profile';
   username = this.authService.getUsername() ?? '';
+  canChangePassword = false;
   changePasswordEndpoint = joinUrl(environment.apiUrl, `auth/change-password/${this.username}`);
 
   navLinks: EntityNavLink[] = [
@@ -89,6 +90,9 @@ export class UsersDetailComponent implements OnInit, OnDestroy {
   private setupRouteListeners(): void {
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       this.loadUserData(params['username']);
+      console.log(params['username'].toLowerCase());
+      console.log(this.username.toLowerCase());
+      this.canChangePassword = (params['username'].toLowerCase() === this.username.toLowerCase());
     });
 
     this.route.queryParams.subscribe(queryParams => {

@@ -4,12 +4,16 @@ import { MaterialModule } from '@modules/material.module';
 import { PageHeaderComponent } from '@components/page-header/page-header.component';
 import { EntityDetailsComponent } from '@components/entity-details/entity-details.component';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CustomerService } from '@services/customer.service';
-import { Title } from '@angular/platform-browser';
 import { EntityNavLink } from '@interfaces/EntityNavLink.interface';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { DynamicInputComponent } from '@components/dynamic-input/dynamic-input.component';
 import { Subject, takeUntil } from 'rxjs';
+import { getLastRouteSegment } from '@utils/url.util';
+import { formatString } from '@utils/string.util';
+import { TicketService } from '@services/ticket.service';
+import { UserService } from '@services/user.service';
+import { CustomerService } from '@services/customer.service';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-tickets-detail',
@@ -30,17 +34,23 @@ export class TicketsDetailComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
+  private ticketService = inject(TicketService);
+  private userService = inject(UserService);
   private customerService = inject(CustomerService);
-  private title = inject(Title);
+  private authService = inject(AuthService);
 
   ticketForm!: FormGroup;
   ticket: any;
   code: string = 'Create Ticket';
-  isEditMode = false;
-  activeTab = 'profile';
+  isCreateMode: boolean = false;
+  isEditMode: boolean = false;
+  activeTab: string = 'details';
+  statuses$ = this.ticketService.getAllStatuses();
+  activeUsers$ = this.userService.getActiveUsers();
+  customers$ = this.customerService.getAllCustomers();
 
   navLinks: EntityNavLink[] = [
-    { id: 'description', label: 'Description', icon: 'description' },
+    { id: 'details', label: 'Details', icon: 'info' },
   ];
 
   typeOptions = [
@@ -54,8 +64,10 @@ export class TicketsDetailComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit() {
+    this.isCreateMode = getLastRouteSegment(this.router) === 'create';
     this.initializeForm();
     this.setupRouteListeners();
+    console.log('Is dueDate control disabled?', this.dueDateFormControl.disabled);
   }
 
   ngOnDestroy() {
@@ -64,23 +76,28 @@ export class TicketsDetailComponent implements OnInit, OnDestroy {
   }
 
   private initializeForm(): void {
+    const today = new Date();
+    const dueDate = new Date();
+    dueDate.setDate(today.getDate() + 7);
+    
     this.ticketForm = this.fb.group({
-      status: ['', Validators.required],
-      dueDate: ['', Validators.required],
+      status: ['BACKLOG', Validators.required],
+      dueDate: [dueDate, Validators.required],
       assignee: ['', Validators.required],
-      reporter: ['', Validators.required],
+      reporter: [this.authService.getCurrentUser()?.id, Validators.required],
       requestBy: ['', Validators.required],
+      title: ['', Validators.required],
       description: ['', Validators.required],
     });
   }
 
   private setupRouteListeners(): void {
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
-      this.loadTicketData(params['id']);
+      //this.loadTicketData(params['id']);
     });
 
     this.route.queryParams.subscribe(queryParams => {
-      this.activeTab = queryParams['tab'] || 'description';
+      this.activeTab = queryParams['tab'] || 'details';
       if (!queryParams['tab']) {
         this.updateQueryParams();
       }
@@ -90,40 +107,14 @@ export class TicketsDetailComponent implements OnInit, OnDestroy {
   private updateQueryParams(): void {
     this.router.navigate([], {
       relativeTo: this.route,
-      queryParams: { tab: 'description' },
+      queryParams: { tab: 'details' },
       queryParamsHandling: 'merge',
       replaceUrl: true
     });
   }
 
-  private loadTicketData(id: number): void {
-    // this.customerService.getCustomerById(id)
-    //   .pipe(takeUntil(this.destroy$))
-    //   .subscribe({
-    //     next: (customer) => this.handleCustomerData(customer),
-    //     error: () => this.router.navigate(['/customers'])
-    //   });
-  }
-
-  private handleCustomerData(customer: any): void {
-    // this.ticket = ticket;
-    // this.name = customer.name;
-    // this.title.setTitle(`${customer.name}'s Profile`);
-    // this.updateFormValues();
-  }
-
-  private updateFormValues(): void {
-    if (this.ticket) {
-      this.ticketForm.patchValue({
-        status: this.ticket.name,
-        dueDate: this.ticket.identifierNo,
-        assignee: this.ticket.type,
-        reporter: this.ticket.email,
-        requestBy: this.ticket.phone,
-        description: this.ticket.address,
-      });
-      this.ticketForm.disable();
-    }
+  formatStatus(status: string): string {
+    return formatString(status);
   }
 
   // Form control getters
@@ -132,6 +123,7 @@ export class TicketsDetailComponent implements OnInit, OnDestroy {
   get assigneeFormControl(): FormControl { return this.ticketForm.get('assignee') as FormControl; }
   get reporterFormControl(): FormControl { return this.ticketForm.get('reporter') as FormControl; }
   get requestByFormControl(): FormControl { return this.ticketForm.get('requestBy') as FormControl; }
+  get titleFormControl(): FormControl { return this.ticketForm.get('title') as FormControl; }
   get descriptionFormControl(): FormControl { return this.ticketForm.get('description') as FormControl; }
 
   toggleEditMode(): void {
@@ -140,20 +132,55 @@ export class TicketsDetailComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(): void {
-    // if (this.ticketForm.valid && this.isEditMode) {
-    //   const updatedCustomer = { id: this.customer.id, ...this.customerForm.value };
-      
-    //   this.customerService.updateCustomer(updatedCustomer).subscribe({
-    //     next: (response) => this.handleUpdateSuccess(response),
-    //     error: (error) => console.error('Error updating customer:', error)
-    //   });
-    // }
+    if (this.isCreateMode) {
+      this.ticketService.createTicket(this.ticketForm.value).subscribe({
+        next: (response: any) => this.handleUpdateSuccess(response),
+        error: (error: any) => console.error('Error creating ticket', error)
+      });
+    } else if (this.isEditMode) {
+      this.ticketService.updateTicket(this.ticket.id, this.ticketForm.value).subscribe({
+        next: (response: any) => this.handleUpdateSuccess(response),
+        error: (error: any) => console.error('Error updating ticket', error)
+      });
+    }
   }
 
   private handleUpdateSuccess(response: any): void {
-    // this.customer = response;
-    // this.updateFormValues();
-    // this.name = response.name;
-    // this.isEditMode = false;
+    this.isEditMode = false;
+    this.router.navigate(['/tickets']);
+  }
+
+  private loadTicketData(id: string | number): void {
+    if (id === 'create') {
+      return;
+    }
+
+    this.ticketService.getTicketById(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (ticket: any) => this.handleTicketData(ticket),
+        error: () => this.router.navigate(['/tickets'])
+      });
+  }
+
+  private handleTicketData(ticket: any): void {
+    this.ticket = ticket;
+    this.code = `Ticket ${ticket.id}`;
+    this.updateFormValues();
+  }
+
+  private updateFormValues(): void {
+    if (this.ticket) {
+      this.ticketForm.patchValue({
+        status: this.ticket.status,
+        dueDate: this.ticket.dueDate,
+        assignee: this.ticket.assignee,
+        reporter: this.ticket.reporter,
+        requestBy: this.ticket.requestBy,
+        title: this.ticket.title,
+        description: this.ticket.description,
+      });
+      this.ticketForm.disable();
+    }
   }
 }

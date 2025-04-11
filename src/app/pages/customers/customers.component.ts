@@ -15,6 +15,7 @@ import { ViewTableComponent } from '@components/view-table/view-table.component'
 import { ViewTableColumn } from '@interfaces/ViewTable.interface';
 import { CUSTOMERS_COLUMN_MAPPINGS } from '@shared/constants';
 import { Observable } from 'rxjs';
+import { CustomerService } from '@services/customer.service';
 
 @Component({
   selector: 'app-customers',
@@ -28,11 +29,11 @@ export class CustomersComponent implements OnInit {
   router: Router = inject(Router);
   fb: FormBuilder = inject(FormBuilder);
   dialog: MatDialog = inject(MatDialog);
-  apiService: ApiService = inject(ApiService);
+  customerService: CustomerService = inject(CustomerService);
 
   // Endpoints and data
   customersEndpoint: string = joinUrl(environment.apiUrl, 'customers');
-  availableTypes$: Observable<string[]> = this.apiService.get(joinUrl(environment.apiUrl, 'customers/types'));
+  availableTypes$: Observable<any[]> = this.customerService.getAllTypes();
   tableColumns: ViewTableColumn[] = CUSTOMERS_COLUMN_MAPPINGS;
   
   customers: any[] = [];
@@ -101,7 +102,7 @@ export class CustomersComponent implements OnInit {
 
   // Fetch customers from the API
   private fetchCustomers(): void {
-    this.apiService.get<any[]>(this.customersEndpoint).subscribe({
+    this.customerService.getAllCustomers().subscribe({
       next: (response) => {
         this.customers = response;
         this.displayedCustomers = [...this.customers];

@@ -3,6 +3,23 @@
   flex-direction: column;
   width: 100%;
 
+  .search-input {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-bottom: 1px solid #ccc;
+    outline: none;
+  }
+
+  .radio-label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  .radio-button {
+    margin-right: 1rem;
+  }
+
   ::ng-deep {
     .mat-mdc-form-field {
       width: 100%;
@@ -14,12 +31,9 @@
 
     .mat-mdc-text-field-wrapper {
       width: 100%;
+      background-color: rgba(0, 0, 0, 0.04); // Light gray background
     }
   }
-}
-
-mat-form-field {
-  width: 100%;
 }
 
 // Radio button styles
@@ -50,57 +64,51 @@ mat-form-field {
   }
 }
 
-// Styles for readonly state
-mat-form-field.readonly-field {
-  .mat-mdc-form-field-infix {
-    color: rgba(0, 0, 0, 0.87);
-  }
+// Form field styles
+mat-form-field {
+  width: 100%;
 
-
-  .mat-mdc-form-field-subscript-wrapper {
-    display: none;
-  }
-
-  // Make the input text more visible
-  input, textarea, .mat-mdc-select-value {
-    color: rgba(0, 0, 0, 0.87);
-    -webkit-text-fill-color: rgba(0, 0, 0, 0.87);
-  }
-
-  // Style the mat-select in readonly mode
-  .mat-mdc-select {
-    .mat-mdc-select-value {
-      color: rgba(0, 0, 0, 0.87);
-    }
-  }
-
-  // Make the label more visible but slightly lighter than the text
-  .mat-mdc-form-field-label {
-    color: rgba(0, 0, 0, 0.7) !important;
-  }
-
-  .mdc-floating-label {
-    color: rgba(0, 0, 0, 0.7) !important;
-  }
-
-  // Ensure the label stays visible when the field has a value
-  .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label,
-  .mat-mdc-form-field .mat-mdc-form-field-label {
-    color: rgba(0, 0, 0, 0.7) !important;
-  }
-
-  // Target the label specifically
   ::ng-deep {
+    .mat-mdc-form-field-label,
     .mdc-floating-label {
-      color: rgba(0, 0, 0, 0.7) !important;
+      color: rgba(0, 0, 0, 0.6);
     }
-    
-    .mat-mdc-form-field-label {
-      color: rgba(0, 0, 0, 0.7) !important;
+
+    .mat-mdc-text-field-wrapper {
+      background-color: #fafafa; // Default light background
+    }
+
+    // Outlined appearance
+    &.mat-mdc-form-field-appearance-outline .mat-mdc-text-field-wrapper {
+      background-color: transparent;
+    }
+  }
+
+  // Readonly state
+  &.readonly-field {
+    ::ng-deep {
+      .mat-mdc-form-field-infix,
+      input,
+      textarea,
+      .mat-mdc-select-value {
+        color: rgba(0, 0, 0, 0.87);
+        -webkit-text-fill-color: rgba(0, 0, 0, 0.87);
+      }
+
+      .mat-mdc-select .mat-mdc-select-value {
+        color: rgba(0, 0, 0, 0.87);
+      }
+
+      .mat-mdc-text-field-wrapper {
+        background-color: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+      }
     }
   }
 }
 
+// Search input
 .search-input {
   width: 100%;
   height: 40px;
@@ -109,4 +117,55 @@ mat-form-field.readonly-field {
 
 textarea {
   white-space: pre-line;
+}
+
+// Editor containers
+.ckeditor-container {
+  width: 100%;
+  margin-bottom: 16px;
+
+  label {
+    display: block;
+    margin-bottom: 8px;
+    color: rgba(0, 0, 0, 0.6);
+    font-size: 14px;
+  }
+
+  ::ng-deep {
+    .ck-editor__editable {
+      min-height: 200px;
+    }
+
+    .ck.ck-editor__main > .ck-editor__editable {
+      background-color: #fff;
+    }
+
+    .ck.ck-editor__main > .ck-editor__editable:focus {
+      border: none;
+      box-shadow: none;
+    }
+  }
+}
+
+.editor-container {
+  width: 100%;
+  margin-bottom: 1rem;
+
+  label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+  }
+
+  ::ng-deep {
+    .angular-editor {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 0.5rem;
+    }
+
+    .angular-editor-toolbar {
+      background-color: #f5f5f5;
+      border-bottom: 1px solid #ccc;
+    }
+  }
 }
