@@ -20,11 +20,15 @@ export class TicketService {
     return this.apiService.post(joinUrl(environment.apiUrl, 'tickets'), data);
   }
 
-  updateTicket(id: number, data: any): Observable<any> {
-    return this.apiService.put(joinUrl(environment.apiUrl, `tickets/${id}`), data);
+  updateTicket(code: string, data: any): Observable<any> {
+    return this.apiService.put(joinUrl(environment.apiUrl, `tickets/${code}`), data);
   }
 
-  getTicketById(id: string | number): Observable<any> {
-    return this.apiService.get(joinUrl(environment.apiUrl, `tickets/${id}`));
+  getTicketByCode(code: string): Observable<any> {
+    return this.apiService.get(joinUrl(environment.apiUrl, `tickets/by-code/${code}`));
+  }
+
+  getDropdownOptions(id: string): Observable<any> {
+    return this.apiService.get(joinUrl(environment.apiUrl, `tickets/${id}/dropdown-options`));
   }
 }

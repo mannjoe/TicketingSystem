@@ -16,6 +16,7 @@ import { MatSort, MatSortModule } from '@angular/material/sort';
 import { MatPaginator, MatPaginatorModule } from '@angular/material/paginator';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { ApiService } from '@services/api.service';
+import { formatString } from '@utils/string.util';
 
 interface ColumnMapping {
   key: string;
@@ -157,6 +158,15 @@ export class ViewTableComponent implements OnInit, AfterViewInit, OnChanges {
   }
 
   getNestedValue(obj: any, path: string): any {
-    return path.split('.').reduce((o, p) => (o ? o[p] : ''), obj);
+    // First get the raw value using the original nested property access
+    const rawValue = path.split('.').reduce((o, p) => (o ? o[p] : ''), obj);
+    
+    // Return empty string for falsy values (null, undefined, empty string, etc.)
+    if (!rawValue) return '';
+    
+    // Format the value only if it's a string
+    return typeof rawValue === 'string' 
+      ? formatString(rawValue) 
+      : rawValue;
   }
 }

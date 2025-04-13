@@ -3,13 +3,14 @@ import { CommonModule } from '@angular/common';
 import { MaterialModule } from '@modules/material.module';
 import { PageHeaderComponent } from '@components/page-header/page-header.component';
 import { EntityDetailsComponent } from '@components/entity-details/entity-details.component';
+import { DynamicInputComponent } from '@components/dynamic-input/dynamic-input.component';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CustomerService } from '@services/customer.service';
 import { Title } from '@angular/platform-browser';
 import { EntityNavLink } from '@interfaces/EntityNavLink.interface';
-import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { DynamicInputComponent } from '@components/dynamic-input/dynamic-input.component';
 import { Subject, takeUntil } from 'rxjs';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-customers-detail',
@@ -27,10 +28,12 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class CustomersDetailComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
+
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private customerService = inject(CustomerService);
+  authService = inject(AuthService);
   private title = inject(Title);
 
   customerForm!: FormGroup;
@@ -40,7 +43,7 @@ export class CustomersDetailComponent implements OnInit, OnDestroy {
   activeTab = 'profile';
 
   navLinks: EntityNavLink[] = [
-    { id: 'profile', label: 'Profile', icon: 'business' },
+    { id: 'profile', label: 'Profile', icon: 'business' }
   ];
 
   typeOptions = [
@@ -55,7 +58,14 @@ export class CustomersDetailComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.initializeForm();
-    this.setupRouteListeners();
+    this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      this.loadCustomerData(params['id']);
+    });
+
+    this.route.queryParams.subscribe(queryParams => {
+      this.activeTab = queryParams['tab'] || 'profile';
+      if (!queryParams['tab']) this.updateQueryParams();
+    });
   }
 
   ngOnDestroy() {
@@ -75,28 +85,6 @@ export class CustomersDetailComponent implements OnInit, OnDestroy {
     });
   }
 
-  private setupRouteListeners(): void {
-    this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
-      this.loadCustomerData(params['id']);
-    });
-
-    this.route.queryParams.subscribe(queryParams => {
-      this.activeTab = queryParams['tab'] || 'profile';
-      if (!queryParams['tab']) {
-        this.updateQueryParams();
-      }
-    });
-  }
-
-  private updateQueryParams(): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { tab: 'profile' },
-      queryParamsHandling: 'merge',
-      replaceUrl: true
-    });
-  }
-
   private loadCustomerData(id: number): void {
     this.customerService.getCustomerById(id)
       .pipe(takeUntil(this.destroy$))
@@ -110,32 +98,26 @@ export class CustomersDetailComponent implements OnInit, OnDestroy {
     this.customer = customer;
     this.name = customer.name;
     this.title.setTitle(`${customer.name}'s Profile`);
-    this.updateFormValues();
+    this.customerForm.patchValue({
+      name: customer.name,
+      identifierNo: customer.identifierNo,
+      type: customer.type,
+      email: customer.email,
+      phone: customer.phone,
+      address: customer.address,
+      active: customer.active
+    });
+    this.customerForm.disable();
   }
 
-  private updateFormValues(): void {
-    if (this.customer) {
-      this.customerForm.patchValue({
-        name: this.customer.name,
-        identifierNo: this.customer.identifierNo,
-        type: this.customer.type,
-        email: this.customer.email,
-        phone: this.customer.phone,
-        address: this.customer.address,
-        active: this.customer.active
-      });
-      this.customerForm.disable();
-    }
+  private updateQueryParams(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { tab: 'profile' },
+      queryParamsHandling: 'merge',
+      replaceUrl: true
+    });
   }
-
-  // Form control getters
-  get nameFormControl(): FormControl { return this.customerForm.get('name') as FormControl; }
-  get identifierNoFormControl(): FormControl { return this.customerForm.get('identifierNo') as FormControl; }
-  get typeFormControl(): FormControl { return this.customerForm.get('type') as FormControl; }
-  get emailFormControl(): FormControl { return this.customerForm.get('email') as FormControl; }
-  get phoneFormControl(): FormControl { return this.customerForm.get('phone') as FormControl; }
-  get addressFormControl(): FormControl { return this.customerForm.get('address') as FormControl; }
-  get activeFormControl(): FormControl { return this.customerForm.get('active') as FormControl; }
 
   toggleEditMode(): void {
     this.isEditMode = !this.isEditMode;
@@ -145,7 +127,6 @@ export class CustomersDetailComponent implements OnInit, OnDestroy {
   onSubmit(): void {
     if (this.customerForm.valid && this.isEditMode) {
       const updatedCustomer = { id: this.customer.id, ...this.customerForm.value };
-      
       this.customerService.updateCustomer(updatedCustomer).subscribe({
         next: (response) => this.handleUpdateSuccess(response),
         error: (error) => console.error('Error updating customer:', error)
@@ -155,8 +136,25 @@ export class CustomersDetailComponent implements OnInit, OnDestroy {
 
   private handleUpdateSuccess(response: any): void {
     this.customer = response;
-    this.updateFormValues();
+    this.customerForm.patchValue({
+      name: response.name,
+      identifierNo: response.identifierNo,
+      type: response.type,
+      email: response.email,
+      phone: response.phone,
+      address: response.address,
+      active: response.active
+    });
+    this.customerForm.disable();
     this.name = response.name;
     this.isEditMode = false;
   }
+
+  get nameFormControl(): FormControl { return this.customerForm.get('name') as FormControl; }
+  get identifierNoFormControl(): FormControl { return this.customerForm.get('identifierNo') as FormControl; }
+  get typeFormControl(): FormControl { return this.customerForm.get('type') as FormControl; }
+  get emailFormControl(): FormControl { return this.customerForm.get('email') as FormControl; }
+  get phoneFormControl(): FormControl { return this.customerForm.get('phone') as FormControl; }
+  get addressFormControl(): FormControl { return this.customerForm.get('address') as FormControl; }
+  get activeFormControl(): FormControl { return this.customerForm.get('active') as FormControl; }
 }

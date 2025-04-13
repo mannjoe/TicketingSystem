@@ -1,22 +1,25 @@
 import { Component, inject, OnInit, TemplateRef, ViewChild } from '@angular/core';
-import { MaterialModule } from '@modules/material.module';
-import { PageHeaderComponent } from '@components/page-header/page-header.component';
 import { Router } from '@angular/router';
 import { FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ApiService } from '@services/api.service';
 import { MatDialog } from '@angular/material/dialog';
-import { DialogComponent } from '@components/dialog/dialog.component';
-import { CommonModule } from '@angular/common';
-import { DynamicInputComponent } from '@components/dynamic-input/dynamic-input.component';
 import { Observable } from 'rxjs';
-import { joinUrl } from '@utils/url.util';
-import { environment } from '@environments/environment';
-import { passwordMatchValidator } from '@utils/validators.util';
+import { CommonModule } from '@angular/common';
+
+import { MaterialModule } from '@modules/material.module';
+import { PageHeaderComponent } from '@components/page-header/page-header.component';
 import { SearchContainerComponent } from '@components/search-container/search-container.component';
 import { ViewTableComponent } from '@components/view-table/view-table.component';
-import { ViewTableColumn } from '@interfaces/ViewTable.interface';
-import { USERS_COLUMN_MAPPINGS } from '@shared/constants';
+import { DynamicInputComponent } from '@components/dynamic-input/dynamic-input.component';
+import { DialogComponent } from '@components/dialog/dialog.component';
+
 import { UserService } from '@services/user.service';
+
+import { USERS_COLUMN_MAPPINGS } from '@shared/constants';
+import { ViewTableColumn } from '@interfaces/ViewTable.interface';
+
+import { environment } from '@environments/environment';
+import { joinUrl } from '@utils/url.util';
+import { passwordMatchValidator } from '@utils/validators.util';
 
 @Component({
   selector: 'app-users',
@@ -38,22 +41,21 @@ export class UsersComponent implements OnInit {
   router = inject(Router);
   fb = inject(FormBuilder);
   dialog = inject(MatDialog);
-  userService = inject(UserService)
+  userService = inject(UserService);
 
-  // Observable data
+  // ViewChild
+  @ViewChild('createUser') createUserTemplate!: TemplateRef<any>;
+
+  // API and observable data
   availableRoles$: Observable<any[]> = this.userService.getAllRoles();
   usersEndpoint: string = joinUrl(environment.apiUrl, 'users');
   tableColumns: ViewTableColumn[] = USERS_COLUMN_MAPPINGS;
 
-  // Data
+  // Users data
   users: any[] = [];
   displayedUsers: any[] = [];
 
-  // Forms
-  userForm!: FormGroup;
-  filterForm!: FormGroup;
-
-  // Form Controls
+  // Form controls
   usernameFormControl = new FormControl('', [Validators.required]);
   emailFormControl = new FormControl('', [Validators.required, Validators.email]);
   passwordFormControl = new FormControl('', [Validators.required]);
@@ -62,7 +64,9 @@ export class UsersComponent implements OnInit {
   lastNameFormControl = new FormControl('', [Validators.required]);
   roleFormControl = new FormControl('', [Validators.required]);
 
-  @ViewChild('createUser') createUserTemplate!: TemplateRef<any>;
+  // Forms
+  userForm!: FormGroup;
+  filterForm!: FormGroup;
 
   // Filter options
   statusOptions = [
@@ -81,7 +85,6 @@ export class UsersComponent implements OnInit {
     this.initializeForms();
     this.fetchUsers();
 
-    // Subscribe to form value changes
     this.filterForm.valueChanges.subscribe(() => {
       this.applyFilters();
     });
@@ -124,6 +127,7 @@ export class UsersComponent implements OnInit {
 
   private applyFilters(): void {
     const formValue = this.filterForm.value;
+
     this.displayedUsers = this.users.filter(user => {
       return (
         (!formValue.username || user.username.toLowerCase().includes(formValue.username.toLowerCase())) &&
@@ -148,7 +152,7 @@ export class UsersComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe(result => {
         if (result) {
-          this.fetchUsers(); // Refresh the user list after creating a new user
+          this.fetchUsers();
         }
       });
     }

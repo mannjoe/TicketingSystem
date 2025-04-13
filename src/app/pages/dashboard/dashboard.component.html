@@ -1,1 +1,40 @@
-<p>dashboard works!</p>
+<div class="dashboard-container">
+  <h2>Ticket Dashboard</h2>
+  <!-- Aging Metrics Cards -->
+  <div class="metrics-grid">
+    <div class="metric-card total">
+      <div class="metric-value">{{ totalTickets }}</div>
+      <div class="metric-label">Total Tickets</div>
+    </div>
+
+    <div class="metric-card less-than-7">
+      <div class="metric-value">{{ lessThan7Days }}</div>
+      <div class="metric-label">Aging < 7 Days</div>
+          <div class="metric-percentage">{{ getPercentage(lessThan7Days) }}%</div>
+      </div>
+
+      <div class="metric-card less-than-14">
+        <div class="metric-value">{{ lessThan14Days }}</div>
+        <div class="metric-label">Aging 7-14 Days</div>
+        <div class="metric-percentage">{{ getPercentage(lessThan14Days) }}%</div>
+      </div>
+
+      <div class="metric-card fourteen-plus">
+        <div class="metric-value">{{ fourteenOrMoreDays }}</div>
+        <div class="metric-label">Aging 14+ Days</div>
+        <div class="metric-percentage">{{ getPercentage(fourteenOrMoreDays) }}%</div>
+      </div>
+    </div>
+
+    <!-- Tickets Table -->
+    <app-view-table [data]="tickets" [columnMappings]="columnMappings" (rowClick)="onRowClick($event)">
+
+      <!-- Custom template for aging column -->
+      <ng-container matColumnDef="aging">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>Aging (Days)</th>
+        <td mat-cell *matCellDef="let element" [style]="getAgingStyle(element.aging)">
+          {{ element.aging }}
+        </td>
+      </ng-container>
+    </app-view-table>
+  </div>

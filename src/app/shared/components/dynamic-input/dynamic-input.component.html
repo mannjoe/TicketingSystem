@@ -58,7 +58,7 @@
   </mat-form-field>
 
   <!-- Rich Text Editor -->
-  <div *ngIf="type === 'editor'" class="editor-container">
+  <div *ngIf="type === 'editor'" class="editor-container" [class.non-editable]="!isEditable">
     <label>{{ label }}</label>
     <angular-editor [formControl]="control" [config]="{
         editable: isEditable,

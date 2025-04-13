@@ -14,28 +14,57 @@
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Name</mat-label>
-        <input matInput formControlName="fullName" />
+        <mat-label>Title</mat-label>
+        <input matInput formControlName="title" />
       </mat-form-field>
 
       <mat-form-field appearance="outline">
-        <mat-label>Email</mat-label>
-        <input matInput formControlName="email" />
+        <mat-label>Assignee</mat-label>
+        <input matInput formControlName="assignee" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Reporter</mat-label>
+        <input matInput formControlName="reporter" />
       </mat-form-field>
     </div>
+
     <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Statuses</mat-label>
+          <mat-select multiple formControlName="statuses">
+            <mat-select-trigger>
+              <div class="selected-statuses">
+                <div class="status-chip" *ngFor="let status of filterForm.get('statuses')?.value">
+                  {{ getStatusLabel(status) }}
+                  <mat-icon class="remove-status" (click)="removeStatus($event, status)">close</mat-icon>
+                </div>
+                <span *ngIf="!filterForm.get('statuses')?.value?.length">Select statuses...</span>
+              </div>
+            </mat-select-trigger>
+            <mat-option *ngFor="let status of statusOptions" [value]="status.value">
+              {{ status.label }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+
       <mat-form-field appearance="outline">
-        <mat-label>Role</mat-label>
-        <mat-select formControlName="roles">
-        </mat-select>
+        <mat-label>Request By</mat-label>
+        <input matInput formControlName="requestBy" />
       </mat-form-field>
+
       <mat-form-field appearance="outline">
-        <mat-label>Status</mat-label>
-        <mat-select formControlName="statuses">
-          <mat-option *ngFor="let status of statusOptions" [value]="status.value">
-            {{ status.label }}
-          </mat-option>
-        </mat-select>
+        <mat-label>Created From</mat-label>
+        <input matInput [matDatepicker]="createdFromPicker" formControlName="createdFrom" />
+        <mat-datepicker-toggle matSuffix [for]="createdFromPicker"></mat-datepicker-toggle>
+        <mat-datepicker #createdFromPicker></mat-datepicker>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Created To</mat-label>
+        <input matInput [matDatepicker]="createdToPicker" formControlName="createdTo" />
+        <mat-datepicker-toggle matSuffix [for]="createdToPicker"></mat-datepicker-toggle>
+        <mat-datepicker #createdToPicker></mat-datepicker>
       </mat-form-field>
     </div>
   </form>

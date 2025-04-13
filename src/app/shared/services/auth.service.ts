@@ -9,7 +9,7 @@ interface User {
   id: number;
   username: string;
   email: string;
-  role: string;
+  userRole: string;
 }
 
 interface AuthResponse {
@@ -85,6 +85,15 @@ export class AuthService implements OnDestroy {
   getCurrentUser(): User | null {
     const user = localStorage.getItem('current_user');
     return user ? JSON.parse(user) : null;
+  }
+
+  getCurrentUserRole(): string | null {
+    const user = this.getCurrentUser();
+    return user?.userRole || null;
+  }
+
+  isAdmin(): boolean {
+    return this.getCurrentUserRole() === 'ADMIN';
   }
 
   getUsername(): string | undefined {
