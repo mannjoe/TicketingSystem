@@ -1,4 +1,4 @@
-<app-page-header>
+<app-page-header *ngIf="authService.isAdmin()">
   <button mat-flat-button (click)="onCreateCustomer()">
     <mat-icon>add</mat-icon>
     Create Customer

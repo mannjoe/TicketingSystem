@@ -18,6 +18,7 @@ import { environment } from '@environments/environment';
 import { ViewTableColumn } from '@interfaces/ViewTable.interface';
 
 import { Observable } from 'rxjs';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-customers',
@@ -35,10 +36,11 @@ import { Observable } from 'rxjs';
   styleUrl: './customers.component.scss'
 })
 export class CustomersComponent implements OnInit {
-  router: Router = inject(Router);
-  fb: FormBuilder = inject(FormBuilder);
-  dialog: MatDialog = inject(MatDialog);
-  customerService: CustomerService = inject(CustomerService);
+  router = inject(Router);
+  fb = inject(FormBuilder);
+  dialog = inject(MatDialog);
+  authService = inject(AuthService);
+  customerService = inject(CustomerService);
 
   customersEndpoint: string = joinUrl(environment.apiUrl, 'customers');
   availableTypes$: Observable<any[]> = this.customerService.getAllTypes();

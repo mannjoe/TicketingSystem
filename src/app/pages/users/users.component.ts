@@ -20,6 +20,7 @@ import { ViewTableColumn } from '@interfaces/ViewTable.interface';
 import { environment } from '@environments/environment';
 import { joinUrl } from '@utils/url.util';
 import { passwordMatchValidator } from '@utils/validators.util';
+import { AuthService } from '@services/auth.service';
 
 @Component({
   selector: 'app-users',
@@ -41,6 +42,7 @@ export class UsersComponent implements OnInit {
   router = inject(Router);
   fb = inject(FormBuilder);
   dialog = inject(MatDialog);
+  authService =  inject(AuthService);
   userService = inject(UserService);
 
   // ViewChild
